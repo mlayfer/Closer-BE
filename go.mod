@@ -3,7 +3,7 @@ module Closer
 go 1.13
 
 require (
-	github.com/gin-gonic/gin v1.4.0 // indirect
+	github.com/gin-gonic/gin v1.4.0
 	github.com/go-swagger/go-swagger v0.21.0 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.3 // indirect

@@ -2,31 +2,32 @@ package main
 
 import (
 	"Closer/controllers"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	//"github.com/gin-gonic/gin"
 )
 
 func main() {
 	logger := log.New()
 
-
-	//eng := gin.Default()
-	//defineRouting(eng)
-	//log.Fatal(eng.Run()) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-
-	router := mux.NewRouter().StrictSlash(true)
-	router.Handle("/", controllers.NewRootController(logger))
-	router.Handle("/users/", controllers.NewUsersController(logger))
-	log.Fatal(http.ListenAndServe(":8080", router))
+	eng := gin.Default()
+	for _, v := range GetAllRoutables(logger) {
+		v.RegisterRouting(eng)
+	}
+	e := eng.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	if e != nil {
+		logger.Fatal(e)
+	} else {
+		return
+	}
 }
 
-//func defineRouting(eng *gin.Engine){
-//	eng.GET()
-//	eng.GET("/ping", func(c *gin.Context) {
-//		c.JSON(200, gin.H{
-//			"message": "pong",
-//		})
-//	})
-//}
+func GetAllRoutables(l *log.Logger) []interface {
+	RegisterRouting(eng *gin.Engine)
+}{
+	return []interface {
+		RegisterRouting(eng *gin.Engine)
+	}{
+		controllers.NewRootController(l),
+		controllers.NewUsersController(l),
+	}
+}

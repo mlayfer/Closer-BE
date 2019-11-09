@@ -3,7 +3,8 @@ package controllers
 import (
 	"Closer/common/users"
 	"Closer/platforms"
-	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -82,23 +83,66 @@ type UsersController struct {
 	log *log.Logger
 }
 
-func NewUsersController(l *log.Logger) UsersController {
-	return UsersController{log: l}
+func NewUsersController(l *log.Logger) *UsersController {
+	return &UsersController{log: l}
 }
 
-func (c UsersController) ServeHTTP(w http.ResponseWriter, t *http.Request) {
-	switch t.Method {
-	case "GET":
-		j, err := json.Marshal(mockUsersDB)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			break
+func (c *UsersController) RegisterRouting(eng *gin.Engine){
+	eng.GET("/users", c.getUsers)
+	eng.GET("/users/:identifier", c.getUserByID)
+	eng.POST("/users", c.addUser)
+	eng.DELETE("/users/:identifier", c.deleteUser)
+}
+
+func (c *UsersController) getUsers(ctx *gin.Context){
+	ctx.JSON(http.StatusOK, mockUsersDB)
+}
+
+func (c *UsersController) deleteUser(ctx *gin.Context){
+	id, err := uuid.Parse(ctx.Param("identifier"))
+	if err != nil{
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	for i, u := range mockUsersDB {
+		if u.Identifier ==  id{
+			mockUsersDB = append(mockUsersDB[:i], mockUsersDB[i+1:]...)
+			ctx.JSON(http.StatusOK, u)
+			return
 		}
-		w.Write(j)
-		break
+	}
+
+	ctx.Status(http.StatusNotFound)
+	return
+}
+
+func (c *UsersController) addUser(ctx *gin.Context){
+	// Parse JSON
+	var json struct {
+		Value users.User `json:"value" binding:"required"`
+	}
+
+	if ctx.Bind(&json) == nil {
+		mockUsersDB = append(mockUsersDB, &json.Value)
+		ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
 	}
 }
 
-func (c *UsersController) GetUsers() ([]*users.User, error){
-	return mockUsersDB, nil
+func (c *UsersController) getUserByID(ctx *gin.Context){
+	id, err := uuid.Parse(ctx.Param("identifier"))
+	if err != nil{
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+
+	for _, u := range mockUsersDB {
+		if u.Identifier ==  id{
+			ctx.JSON(http.StatusOK, u)
+			return
+		}
+	}
+
+	ctx.Status(http.StatusNotFound)
+	return
 }
