@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"Closer/common/platforms"
 	"Closer/common/users"
-	"Closer/platforms"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -48,8 +48,8 @@ func (c *RegistrationController) registerUser(ctx *gin.Context){
 }
 
 type registerUserRequest struct {
-	FirstName string `json:"firstname" binding:"required"`
-	LastName  string `json:"lastname" binding:"required"`
-	Email     string `json:"email" binding:"required"`
+	FirstName string                `json:"firstname" binding:"required"`
+	LastName  string                `json:"lastname" binding:"required"`
+	Email     string                `json:"email" binding:"required"`
 	Platforms []*platforms.Platform `json:"platforms" binding:"required"`
 }

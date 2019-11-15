@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"Closer/common/platforms"
 	"Closer/common/users"
-	"Closer/platforms"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
