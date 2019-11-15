@@ -14,6 +14,6 @@ func (f *Factory) NewPlatform(pt PlatformType, data string) *Platform {
 	}
 	return &Platform{
 		Type:          pt,
-		PlatformsData: pd,
+		PlatformData: pd,
 	}
 }

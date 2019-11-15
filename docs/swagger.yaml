@@ -1,0 +1,47 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a server for closer application
+  license: {}
+  title: Swagger Closer API
+  version: "0.1"
+paths:
+  /users:
+    get:
+      description: returns all users in DB
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: JSON
+      summary: get Users
+      tags:
+      - users
+  /users/:
+    delete:
+      description: removes a user from DB
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: JSON
+      summary: deletes a user
+      tags:
+      - users
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: JSON
+      summary: returns a specific user
+      tags:
+      - users
+swagger: "2.0"

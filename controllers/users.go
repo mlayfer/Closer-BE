@@ -15,7 +15,7 @@ var (
 		users.NewUser("Nitzan", "Uzan", "nitzan@somthing.com", []*platforms.Platform{
 			{
 				Type: platforms.Google,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Nitzanu",
 					Nickname:   "nitz",
 					ProfilePic: mockPic,
@@ -23,7 +23,7 @@ var (
 			},
 			{
 				Type: platforms.Facebook,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Nitzanu",
 					Nickname:   "nitz",
 					ProfilePic: mockPic,
@@ -33,7 +33,7 @@ var (
 		users.NewUser("Maayan", "Layfer", "maayan@somthing.com", []*platforms.Platform{
 			{
 				Type: platforms.Instagram,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Maayan",
 					Nickname:   "Maayan",
 					ProfilePic: mockPic,
@@ -43,7 +43,7 @@ var (
 		users.NewUser("Lychee", "The Dog", "woofwoof@gmail.com", []*platforms.Platform{
 			{
 				Type: platforms.Facebook,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Lychee",
 					Nickname:   "lycha",
 					ProfilePic: mockPic,
@@ -51,7 +51,7 @@ var (
 			},
 			{
 				Type: platforms.Youtube,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Lychee",
 					Nickname:   "lych",
 					ProfilePic: mockPic,
@@ -59,7 +59,7 @@ var (
 			},
 			{
 				Type: platforms.Linkedin,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "Lychee",
 					Nickname:   "lycheeeeeeeee",
 					ProfilePic: mockPic,
@@ -69,7 +69,7 @@ var (
 		users.NewUser("Chai", "The Dog", "woofwoof2@gmail.com", []*platforms.Platform{
 			{
 				Type: platforms.Instagram,
-				PlatformsData: &platforms.PlatformData{
+				PlatformData: &platforms.PlatformData{
 					Username:   "chai1",
 					Nickname:   "chacha",
 					ProfilePic: mockPic,
@@ -90,14 +90,28 @@ func NewUsersController(l *log.Logger) *UsersController {
 func (c *UsersController) RegisterRouting(eng *gin.Engine){
 	eng.GET("/users", c.getUsers)
 	eng.GET("/users/:identifier", c.getUserByID)
-	eng.POST("/users", c.addUser)
 	eng.DELETE("/users/:identifier", c.deleteUser)
 }
 
+// getUsers godoc
+// @Summary get Users
+// @Description returns all users in DB
+// @Tags users
+// @Produce json
+// @Success 200 {JSON} string AllUsers
+// @Router /users [GET]
 func (c *UsersController) getUsers(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, mockUsersDB)
 }
 
+// deleteUser godoc
+// @Summary deletes a user
+// @Description removes a user from DB
+// @Tags users
+// @Receive json
+// @Produce json
+// @Success 200 {JSON} string theUser
+// @Router /users/:identifier [DELETE]
 func (c *UsersController) deleteUser(ctx *gin.Context){
 	id, err := uuid.Parse(ctx.Param("identifier"))
 	if err != nil{
@@ -117,18 +131,14 @@ func (c *UsersController) deleteUser(ctx *gin.Context){
 	return
 }
 
-func (c *UsersController) addUser(ctx *gin.Context){
-	// Parse JSON
-	var json struct {
-		Value users.User `json:"value" binding:"required"`
-	}
 
-	if ctx.Bind(&json) == nil {
-		mockUsersDB = append(mockUsersDB, &json.Value)
-		ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
-	}
-}
-
+// getUserByID godoc
+// @Summary returns a specific user
+// @Tags users
+// @Receive json
+// @Produce json
+// @Success 200 {JSON} string theUser
+// @Router /users/:identifier [POST]
 func (c *UsersController) getUserByID(ctx *gin.Context){
 	id, err := uuid.Parse(ctx.Param("identifier"))
 	if err != nil{

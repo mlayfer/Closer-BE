@@ -6,11 +6,11 @@ import (
 )
 
 type User struct {
-	Identifier uuid.UUID
-	FirstName  string
-	LastName   string
-	Email      string
-	Platforms  []*platforms.Platform
+	Identifier uuid.UUID `json:"identifier" binding:"required"`
+	FirstName  string `json:"username" binding:"required"`
+	LastName   string `json:"lastname" binding:"required"`
+	Email      string `json:"email" binding:"required"`
+	Platforms  []*platforms.Platform `json:"platforms" binding:"required"`
 }
 
 func NewUser(FirstName, LastName, Email string, platforms []*platforms.Platform) *User {

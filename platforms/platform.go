@@ -17,10 +17,10 @@ const (
 )
 
 type PlatformData struct {
-	Username   string
-	password   string
-	Nickname   string
-	ProfilePic []byte
+	Username   string `json:"username" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+	Nickname   string `json:"nickname" binding:"required"`
+	ProfilePic []byte `json:"profilepic" binding:"required"`
 }
 
 func (pd *PlatformData) String() (string, error) {
@@ -41,6 +41,6 @@ func LoadData(data string) (*PlatformData, error) {
 }
 
 type Platform struct {
-	Type          PlatformType
-	PlatformsData *PlatformData
+	Type          PlatformType `json:"type" binding:"required"`
+	PlatformData *PlatformData `json:"platformdata" binding:"required"`
 }
