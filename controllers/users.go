@@ -11,69 +11,55 @@ import (
 
 var (
 	mockPic     = []byte("c2h0b290IHplIHN0YW0gdG1vb25hIHZlIGxvIHN0cmluZyBhdGEgbWVkYW1pZW4gYXMgZHN3dGcgdDRXIDM1OSVUIFky")
-	mockUsersDB = []*users.User{
+	MockUsersDB = []*users.User{
 		users.NewUser("Nitzan", "Uzan", "nitzan@somthing.com", []*platforms.Platform{
 			{
-				Type: platforms.Google,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Nitzanu",
-					Nickname:   "nitz",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Google,
+				Username:       "Nitzanu",
+				Nickname:       "nitz",
+				ProfilePicture: mockPic,
 			},
 			{
-				Type: platforms.Facebook,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Nitzanu",
-					Nickname:   "nitz",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Facebook,
+				Username:       "Nitzanu",
+				Nickname:       "nitz",
+				ProfilePicture: mockPic,
 			},
 		}),
 		users.NewUser("Maayan", "Layfer", "maayan@somthing.com", []*platforms.Platform{
 			{
-				Type: platforms.Instagram,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Maayan",
-					Nickname:   "Maayan",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Instagram,
+				Username:       "Maayan",
+				Nickname:       "Maayan",
+				ProfilePicture: mockPic,
 			},
 		}),
 		users.NewUser("Lychee", "The Dog", "woofwoof@gmail.com", []*platforms.Platform{
 			{
-				Type: platforms.Facebook,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Lychee",
-					Nickname:   "lycha",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Facebook,
+				Username:       "Lychee",
+				Nickname:       "lycha",
+				ProfilePicture: mockPic,
 			},
 			{
-				Type: platforms.Youtube,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Lychee",
-					Nickname:   "lych",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Youtube,
+				Username:       "Lychee",
+				Nickname:       "lych",
+				ProfilePicture: mockPic,
 			},
 			{
-				Type: platforms.Linkedin,
-				PlatformData: &platforms.PlatformData{
-					Username:   "Lychee",
-					Nickname:   "lycheeeeeeeee",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Linkedin,
+				Username:       "Lychee",
+				Nickname:       "lycheeeeeeeee",
+				ProfilePicture: mockPic,
 			},
 		}),
 		users.NewUser("Chai", "The Dog", "woofwoof2@gmail.com", []*platforms.Platform{
 			{
-				Type: platforms.Instagram,
-				PlatformData: &platforms.PlatformData{
-					Username:   "chai1",
-					Nickname:   "chacha",
-					ProfilePic: mockPic,
-				},
+				Type:           platforms.Instagram,
+				Username:       "chai1",
+				Nickname:       "chacha",
+				ProfilePicture: mockPic,
 			},
 		}),
 	}
@@ -87,41 +73,26 @@ func NewUsersController(l *log.Logger) *UsersController {
 	return &UsersController{log: l}
 }
 
-func (c *UsersController) RegisterRouting(eng *gin.Engine){
+func (c *UsersController) RegisterRouting(eng *gin.Engine) {
 	eng.GET("/users", c.getUsers)
 	eng.GET("/users/:identifier", c.getUserByID)
 	eng.DELETE("/users/:identifier", c.deleteUser)
 }
 
-// getUsers godoc
-// @Summary get Users
-// @Description returns all users in DB
-// @Tags users
-// @Produce json
-// @Success 200 {JSON} string AllUsers
-// @Router /users [GET]
-func (c *UsersController) getUsers(ctx *gin.Context){
-	ctx.JSON(http.StatusOK, mockUsersDB)
+func (c *UsersController) getUsers(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, MockUsersDB)
 }
 
-// deleteUser godoc
-// @Summary deletes a user
-// @Description removes a user from DB
-// @Tags users
-// @Receive json
-// @Produce json
-// @Success 200 {JSON} string theUser
-// @Router /users/:identifier [DELETE]
-func (c *UsersController) deleteUser(ctx *gin.Context){
+func (c *UsersController) deleteUser(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("identifier"))
-	if err != nil{
+	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
 
-	for i, u := range mockUsersDB {
-		if u.Identifier ==  id{
-			mockUsersDB = append(mockUsersDB[:i], mockUsersDB[i+1:]...)
+	for i, u := range MockUsersDB {
+		if u.Identifier == id {
+			MockUsersDB = append(MockUsersDB[:i], MockUsersDB[i+1:]...)
 			ctx.JSON(http.StatusOK, u)
 			return
 		}
@@ -131,23 +102,15 @@ func (c *UsersController) deleteUser(ctx *gin.Context){
 	return
 }
 
-
-// getUserByID godoc
-// @Summary returns a specific user
-// @Tags users
-// @Receive json
-// @Produce json
-// @Success 200 {JSON} string theUser
-// @Router /users/:identifier [POST]
-func (c *UsersController) getUserByID(ctx *gin.Context){
+func (c *UsersController) getUserByID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("identifier"))
-	if err != nil{
+	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
 
-	for _, u := range mockUsersDB {
-		if u.Identifier ==  id{
+	for _, u := range MockUsersDB {
+		if u.Identifier == id {
 			ctx.JSON(http.StatusOK, u)
 			return
 		}

@@ -17,7 +17,7 @@ func NewRegistrationController(l *log.Logger) *RegistrationController {
 	return &RegistrationController{log: l}
 }
 
-func (c *RegistrationController) RegisterRouting(eng *gin.Engine){
+func (c *RegistrationController) RegisterRouting(eng *gin.Engine) {
 	eng.POST("/register", c.registerUser)
 }
 
@@ -29,21 +29,21 @@ func (c *RegistrationController) RegisterRouting(eng *gin.Engine){
 // @Produce json
 // @Success 200 {JSON} string newUser
 // @Router /users/ [POST]
-func (c *RegistrationController) registerUser(ctx *gin.Context){
+func (c *RegistrationController) registerUser(ctx *gin.Context) {
 	var ru registerUserRequest
 	if err := ctx.BindJSON(&ru); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	if (ru.Platforms == nil || len(ru.Platforms) == 0){
+	if ru.Platforms == nil || len(ru.Platforms) == 0 {
 		ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("cannot register without a platform"))
 		return
 	}
 
- 	u := users.NewUser(ru.FirstName, ru.LastName, ru.Email, ru.Platforms)
+	u := users.NewUser(ru.FirstName, ru.LastName, ru.Email, ru.Platforms)
 
-	mockUsersDB = append(mockUsersDB, u)
+	MockUsersDB = append(MockUsersDB, u)
 	ctx.JSON(http.StatusOK, gin.H{"identifier": u.Identifier})
 }
 

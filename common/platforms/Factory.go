@@ -7,13 +7,12 @@ func NewFactory() *Factory {
 	return &Factory{}
 }
 
-func (f *Factory) NewPlatform(pt PlatformType, data string) *Platform {
-	pd, err := LoadData(data)
-	if err != nil {
-		return nil
-	}
+func (f *Factory) NewPlatform(pt PlatformType, username, password, nickname string, picBlob []byte) *Platform {
 	return &Platform{
-		Type:          pt,
-		PlatformData: pd,
+		Type:           pt,
+		Username:       username,
+		Password:       password,
+		Nickname:       nickname,
+		ProfilePicture: picBlob,
 	}
 }
