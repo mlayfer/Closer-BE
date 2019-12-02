@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Closer/common/platforms"
 	"Closer/common/users"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -9,68 +8,20 @@ import (
 	"net/http"
 )
 
-var (
-	mockPic     = []byte("c2h0b290IHplIHN0YW0gdG1vb25hIHZlIGxvIHN0cmluZyBhdGEgbWVkYW1pZW4gYXMgZHN3dGcgdDRXIDM1OSVUIFky")
-	MockUsersDB = []*users.User{
-		users.NewUser("Nitzan", "Uzan", "nitzan@somthing.com", []*platforms.Platform{
-			{
-				Type:           platforms.Google,
-				Username:       "Nitzanu",
-				Nickname:       "nitz",
-				ProfilePicture: mockPic,
-			},
-			{
-				Type:           platforms.Facebook,
-				Username:       "Nitzanu",
-				Nickname:       "nitz",
-				ProfilePicture: mockPic,
-			},
-		}),
-		users.NewUser("Maayan", "Layfer", "maayan@somthing.com", []*platforms.Platform{
-			{
-				Type:           platforms.Instagram,
-				Username:       "Maayan",
-				Nickname:       "Maayan",
-				ProfilePicture: mockPic,
-			},
-		}),
-		users.NewUser("Lychee", "The Dog", "woofwoof@gmail.com", []*platforms.Platform{
-			{
-				Type:           platforms.Facebook,
-				Username:       "Lychee",
-				Nickname:       "lycha",
-				ProfilePicture: mockPic,
-			},
-			{
-				Type:           platforms.Youtube,
-				Username:       "Lychee",
-				Nickname:       "lych",
-				ProfilePicture: mockPic,
-			},
-			{
-				Type:           platforms.Linkedin,
-				Username:       "Lychee",
-				Nickname:       "lycheeeeeeeee",
-				ProfilePicture: mockPic,
-			},
-		}),
-		users.NewUser("Chai", "The Dog", "woofwoof2@gmail.com", []*platforms.Platform{
-			{
-				Type:           platforms.Instagram,
-				Username:       "chai1",
-				Nickname:       "chacha",
-				ProfilePicture: mockPic,
-			},
-		}),
-	}
-)
+type usersDB interface {
+	GetAllUsers() ([]*users.User, error)
+	DeleteUser(id uuid.UUID) error
+	GetUserByID(id uuid.UUID) (*users.User, error)
+	InsertUser(user *users.User) error
+}
 
 type UsersController struct {
 	log *log.Logger
+	db usersDB
 }
 
-func NewUsersController(l *log.Logger) *UsersController {
-	return &UsersController{log: l}
+func NewUsersController(l *log.Logger, database usersDB) *UsersController {
+	return &UsersController{log: l, db: database}
 }
 
 func (c *UsersController) RegisterRouting(eng *gin.Engine) {
@@ -80,7 +31,13 @@ func (c *UsersController) RegisterRouting(eng *gin.Engine) {
 }
 
 func (c *UsersController) getUsers(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, MockUsersDB)
+	allUsers, err := c.db.GetAllUsers()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, allUsers)
 }
 
 func (c *UsersController) deleteUser(ctx *gin.Context) {
@@ -90,15 +47,13 @@ func (c *UsersController) deleteUser(ctx *gin.Context) {
 		return
 	}
 
-	for i, u := range MockUsersDB {
-		if u.Identifier == id {
-			MockUsersDB = append(MockUsersDB[:i], MockUsersDB[i+1:]...)
-			ctx.JSON(http.StatusOK, u)
-			return
-		}
+	err = c.db.DeleteUser(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
 	}
 
-	ctx.Status(http.StatusNotFound)
+	ctx.Status(http.StatusNoContent)
 	return
 }
 
@@ -109,13 +64,12 @@ func (c *UsersController) getUserByID(ctx *gin.Context) {
 		return
 	}
 
-	for _, u := range MockUsersDB {
-		if u.Identifier == id {
-			ctx.JSON(http.StatusOK, u)
-			return
-		}
+	usr, err := c.db.GetUserByID(id)
+	if err != nil {
+		ctx.Status(http.StatusNotFound)
+		return
 	}
 
-	ctx.Status(http.StatusNotFound)
+	ctx.JSON(http.StatusOK, usr)
 	return
 }

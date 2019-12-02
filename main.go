@@ -15,10 +15,8 @@ func main() {
 	db, dbClose := dataaccess.NewDatabaseAccess("root", "root")
 	defer dbClose()
 
-	db.DB.Create(controllers.MockUsersDB[0])
-
 	eng := gin.Default()
-	for _, v := range GetAllRoutables() {
+	for _, v := range GetAllRoutables(db) {
 		v.RegisterRouting(eng)
 	}
 
@@ -28,14 +26,10 @@ func main() {
 	}
 }
 
-func GetAllRoutables() []interface {
-	RegisterRouting(eng *gin.Engine)
-} {
-	return []interface {
-		RegisterRouting(eng *gin.Engine)
-	}{
+func GetAllRoutables(db *dataaccess.Database) []interface {RegisterRouting(eng *gin.Engine)} {
+	return []interface {RegisterRouting(eng *gin.Engine)}{
 		controllers.NewRootController(logger),
-		controllers.NewUsersController(logger),
-		controllers.NewRegistrationController(logger),
+		controllers.NewUsersController(logger, db),
+		controllers.NewRegistrationController(logger, db),
 	}
 }

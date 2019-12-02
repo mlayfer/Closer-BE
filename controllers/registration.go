@@ -11,24 +11,17 @@ import (
 
 type RegistrationController struct {
 	log *log.Logger
+	db usersDB
 }
 
-func NewRegistrationController(l *log.Logger) *RegistrationController {
-	return &RegistrationController{log: l}
+func NewRegistrationController(l *log.Logger, database usersDB) *RegistrationController {
+	return &RegistrationController{log: l, db:database}
 }
 
 func (c *RegistrationController) RegisterRouting(eng *gin.Engine) {
 	eng.POST("/register", c.registerUser)
 }
 
-// registerUser godoc
-// @Summary adds a user
-// @Description add a user to DB
-// @Tags users
-// @Receive json
-// @Produce json
-// @Success 200 {JSON} string newUser
-// @Router /users/ [POST]
 func (c *RegistrationController) registerUser(ctx *gin.Context) {
 	var ru registerUserRequest
 	if err := ctx.BindJSON(&ru); err != nil {
@@ -41,9 +34,17 @@ func (c *RegistrationController) registerUser(ctx *gin.Context) {
 		return
 	}
 
-	u := users.NewUser(ru.FirstName, ru.LastName, ru.Email, ru.Platforms)
+	u := &users.User{
+		FirstName:  ru.FirstName,
+		LastName:   ru.LastName,
+		Email:      ru.Email,
+		Platforms:  ru.Platforms,
+	}
+	if err := c.db.InsertUser(u); err != nil {
+		ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
-	MockUsersDB = append(MockUsersDB, u)
 	ctx.JSON(http.StatusOK, gin.H{"identifier": u.Identifier})
 }
 

@@ -9,26 +9,28 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type database struct {
-	DB *gorm.DB
+type Database struct {
+	db *gorm.DB
 }
 
-func NewDatabaseAccess(user, pass string) (dbConn *database, closer func()) {
+func NewDatabaseAccess(user, pass string) (dbConn *Database, closer func()) {
 	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@/CloserDB?charset=utf8&parseTime=True&loc=Local", user, pass))
 	if err != nil {
 		panic("failed to open DB connection")
 	}
 
-	if !db.HasTable("users_platforms") {
-		db.Table("users_platforms").CreateTable(new(platforms.Platform))
-	} else {
-		db.AutoMigrate(new(platforms.Platform))
-	}
-	if !db.HasTable(new(users.User)) {
-		db.Table("users").CreateTable(new(users.User))
-	} else {
-		db.AutoMigrate(new(users.User))
-	}
+	return &Database{db: db}, func() { db.Close() }
+}
 
-	return &database{DB: db}, func() { db.Close() }
+func (d *Database) InitDB(){
+	if !d.db.HasTable("platforms") {
+		d.db.Table("platforms").CreateTable(new(platforms.Platform))
+	} else {
+		d.db.AutoMigrate(new(platforms.Platform))
+	}
+	if !d.db.HasTable(new(users.User)) {
+		d.db.Table("users").CreateTable(new(users.User))
+	} else {
+		d.db.AutoMigrate(new(users.User))
+	}
 }
