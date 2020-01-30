@@ -1,7 +1,8 @@
 package platforms
 
 import (
-	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
+	uuid "github.com/satori/go.uuid"
 )
 
 type PlatformType int
@@ -19,10 +20,15 @@ const (
 )
 
 type Platform struct {
-	UserIdentifier uuid.UUID
-	Type           PlatformType `json:"type" binding:"required" gorm:"type:INT"`
-	Username       string       `json:"username" binding:"required" gorm:"type:VARCHAR(255)"`
-	Password       string       `json:"password" binding:"required" gorm:"type:VARCHAR(255)"`
-	Nickname       string       `json:"nickname" binding:"required" gorm:"type:VARCHAR(255)"`
-	ProfilePicture []byte       `json:"profilepic" binding:"required" gorm:"type:BLOB"`
+	Identifier	   uuid.UUID 	`json:"-" gorm:"primary_key;"`
+	UserIdentifier uuid.UUID	`json:"-"`
+	Type           PlatformType `json:"type" binding:"required"`
+	Username       string       `json:"username" binding:"required"`
+	Password       string       `json:"password" binding:"required"`
+	Nickname       string       `json:"nickname" binding:"required"`
+	ProfilePicture []byte       `json:"profilepic" binding:"required"`
+}
+
+func (p *Platform) BeforeCreate(scope *gorm.Scope) error {
+	return scope.SetColumn("Identifier", uuid.NewV4().String())
 }
