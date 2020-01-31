@@ -1,26 +1,19 @@
 package controllers
 
 import (
-	"Closer/common/users"
+	"Closer/dataaccess"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-type usersDB interface {
-	GetAllUsers() ([]*users.User, error)
-	DeleteUser(id uuid.UUID) error
-	GetUserByID(id uuid.UUID) (*users.User, error)
-	InsertUser(user *users.User) error
-}
-
 type UsersController struct {
 	log *log.Logger
-	db usersDB
+	db  dataaccess.User
 }
 
-func NewUsersController(l *log.Logger, database usersDB) *UsersController {
+func NewUsersController(l *log.Logger, database dataaccess.User) *UsersController {
 	return &UsersController{log: l, db: database}
 }
 
@@ -41,7 +34,7 @@ func (c *UsersController) getUsers(ctx *gin.Context) {
 }
 
 func (c *UsersController) deleteUser(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("identifier"))
+	id, err := uuid.FromString(ctx.Param("identifier"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return
@@ -58,13 +51,13 @@ func (c *UsersController) deleteUser(ctx *gin.Context) {
 }
 
 func (c *UsersController) getUserByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("identifier"))
+	id, err := uuid.FromString(ctx.Param("identifier"))
 	if err != nil {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
 
-	usr, err := c.db.GetUserByID(id)
+	usr, err := c.db.GetByIdentifier(id)
 	if err != nil {
 		ctx.Status(http.StatusNotFound)
 		return

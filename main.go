@@ -5,14 +5,12 @@ import (
 	"Closer/dataaccess"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-
-	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 var logger = log.New()
 
 func main() {
-	db, dbClose := dataaccess.NewDatabaseAccess("root", "root")
+	db, dbClose := dataaccess.NewDataAccess(".\\CloserDB")
 	defer dbClose()
 
 	eng := gin.Default()
@@ -26,10 +24,10 @@ func main() {
 	}
 }
 
-func GetAllRoutables(db *dataaccess.Database) []interface {RegisterRouting(eng *gin.Engine)} {
-	return []interface {RegisterRouting(eng *gin.Engine)}{
+func GetAllRoutables(db *dataaccess.DataAccess) []interface{ RegisterRouting(eng *gin.Engine) } {
+	return []interface{ RegisterRouting(eng *gin.Engine) }{
 		controllers.NewRootController(logger),
-		controllers.NewUsersController(logger, db),
+		controllers.NewUsersController(logger, db.User),
 		controllers.NewRegistrationController(logger, db),
 	}
 }

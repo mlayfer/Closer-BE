@@ -3,72 +3,107 @@ package main
 import (
 	"Closer/common/platforms"
 	"Closer/common/users"
-	"Closer/dataaccess"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"os"
+
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 var (
 	mockPic     = []byte("c2h0b290IHplIHN0YW0gdG1vb25hIHZlIGxvIHN0cmluZyBhdGEgbWVkYW1pZW4gYXMgZHN3dGcgdDRXIDM1OSVUIFky")
 	MockUsersDB = []*users.User{
-		users.NewUser("Nitzan", "Uzan", "nitzan@somthing.com", []*platforms.Platform{
-			{
-				Type:           platforms.Google,
-				Username:       "Nitzanu",
-				Nickname:       "nitz",
-				ProfilePicture: mockPic,
+		{
+			FirstName: "Nitzan",
+			LastName:  "Uzan",
+			Email:     "nitzan@somthing.com",
+			Platforms: []platforms.Platform{
+				{
+					Type:           platforms.Google,
+					Username:       "Nitzanu",
+					Nickname:       "nitz",
+					ProfilePicture: mockPic,
+				},
+				{
+					Type:           platforms.Facebook,
+					Username:       "Nitzanu",
+					Nickname:       "nitz",
+					ProfilePicture: mockPic,
+				},
 			},
-			{
-				Type:           platforms.Facebook,
-				Username:       "Nitzanu",
-				Nickname:       "nitz",
-				ProfilePicture: mockPic,
+		},
+		{
+			FirstName: "Maayan",
+			LastName:  "Layfer",
+			Email:     "maayan@somthing.com",
+			Platforms: []platforms.Platform{
+				{
+					Type:           platforms.Instagram,
+					Username:       "Maayan",
+					Nickname:       "Maayan",
+					ProfilePicture: mockPic,
+				},
 			},
-		}),
-		users.NewUser("Maayan", "Layfer", "maayan@somthing.com", []*platforms.Platform{
-			{
-				Type:           platforms.Instagram,
-				Username:       "Maayan",
-				Nickname:       "Maayan",
-				ProfilePicture: mockPic,
+		},
+		{
+			FirstName: "Lychee",
+			LastName:  "The Dog",
+			Email:     "woofwoof@gmail.com",
+			Platforms: []platforms.Platform{
+				{
+					Type:           platforms.Facebook,
+					Username:       "Lychee",
+					Nickname:       "lycha",
+					ProfilePicture: mockPic,
+				},
+				{
+					Type:           platforms.Youtube,
+					Username:       "Lychee",
+					Nickname:       "lych",
+					ProfilePicture: mockPic,
+				},
+				{
+					Type:           platforms.Linkedin,
+					Username:       "Lychee",
+					Nickname:       "lycheeeeeeeee",
+					ProfilePicture: mockPic,
+				},
 			},
-		}),
-		users.NewUser("Lychee", "The Dog", "woofwoof@gmail.com", []*platforms.Platform{
-			{
-				Type:           platforms.Facebook,
-				Username:       "Lychee",
-				Nickname:       "lycha",
-				ProfilePicture: mockPic,
+		},
+		{
+			FirstName: "Chai",
+			LastName:  "The Dog",
+			Email:     "woofwoof2@gmail.com",
+			Platforms: []platforms.Platform{
+				{
+					Type:           platforms.Instagram,
+					Username:       "chai1",
+					Nickname:       "chacha",
+					ProfilePicture: mockPic,
+				},
 			},
-			{
-				Type:           platforms.Youtube,
-				Username:       "Lychee",
-				Nickname:       "lych",
-				ProfilePicture: mockPic,
-			},
-			{
-				Type:           platforms.Linkedin,
-				Username:       "Lychee",
-				Nickname:       "lycheeeeeeeee",
-				ProfilePicture: mockPic,
-			},
-		}),
-		users.NewUser("Chai", "The Dog", "woofwoof2@gmail.com", []*platforms.Platform{
-			{
-				Type:           platforms.Instagram,
-				Username:       "chai1",
-				Nickname:       "chacha",
-				ProfilePicture: mockPic,
-			},
-		}),
+		},
 	}
 )
 
 func main() {
-	closerDB, closer := dataaccess.NewDatabaseAccess("root", "root")
-	defer closer()
+	dbPath := ".\\CloserDB"
+	_ = os.Remove(dbPath)
+
+	db, err := gorm.Open("sqlite3", dbPath)
+	if err != nil {
+		panic(fmt.Sprintf("failed to open DB connection with err %s", err.Error()))
+	}
+	defer db.Close()
+
+	db.DropTableIfExists(platforms.Platform{})
+	db.DropTableIfExists(users.User{})
+
+	db.AutoMigrate(users.User{})
+	db.AutoMigrate(platforms.Platform{})
 
 	for _, u := range MockUsersDB {
-		err := closerDB.InsertUser(u)
+		err := db.Create(u)
 		if err != nil {
 			fmt.Println(err)
 		}

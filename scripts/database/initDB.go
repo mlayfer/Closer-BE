@@ -1,22 +1,27 @@
 package main
 
 import (
-	"Closer/dataaccess"
-	"database/sql"
+	"Closer/common/platforms"
+	"Closer/common/users"
+	"fmt"
+	"github.com/jinzhu/gorm"
+	"os"
+
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 func main() {
-	db, err := sql.Open("mysql", "root:root@/")
+	dbPath := ".\\CloserDB"
+	_ = os.Remove(dbPath)
+
+	db, err := gorm.Open("sqlite3", dbPath)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to open DB connection with err %s", err.Error()))
 	}
 	defer db.Close()
 
-	_, _ = db.Exec("DROP SCHEMA CloserDB")
-	_, _ = db.Exec("CREATE SCHEMA CloserDB")
+	db.DropTableIfExists(platforms.Platform{})
+	db.DropTableIfExists(users.User{})
 
-	closerDB, closer := dataaccess.NewDatabaseAccess("root", "root")
-	defer closer()
-
-	closerDB.InitDB()
+	db.AutoMigrate(users.User{}, platforms.Platform{})
 }
