@@ -3,6 +3,7 @@ package controllers
 import (
 	"Closer/common/platforms"
 	"Closer/common/users"
+	"Closer/dataaccess"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -11,11 +12,11 @@ import (
 
 type RegistrationController struct {
 	log *log.Logger
-	db  usersDB
+	db  *dataaccess.DataAccess
 }
 
-func NewRegistrationController(l *log.Logger, database usersDB) *RegistrationController {
-	return &RegistrationController{log: l, db: database}
+func NewRegistrationController(l *log.Logger, db *dataaccess.DataAccess) *RegistrationController {
+	return &RegistrationController{log: l, db: db}
 }
 
 func (c *RegistrationController) RegisterRouting(eng *gin.Engine) {
@@ -40,7 +41,7 @@ func (c *RegistrationController) registerUser(ctx *gin.Context) {
 		Email:     ru.Email,
 		Platforms: ru.Platforms,
 	}
-	if err := c.db.InsertUser(u); err != nil {
+	if err := c.db.User.InsertUser(u); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
@@ -52,5 +53,5 @@ type registerUserRequest struct {
 	FirstName string                `json:"firstname" binding:"required"`
 	LastName  string                `json:"lastname" binding:"required"`
 	Email     string                `json:"email" binding:"required"`
-	Platforms []*platforms.Platform `json:"platforms" binding:"required"`
+	Platforms []platforms.Platform `json:"platforms" binding:"required"`
 }

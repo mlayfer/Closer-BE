@@ -15,10 +15,10 @@ func NewUserDB(db *gorm.DB) *UserDB {
 	return &UserDB{db: db}
 }
 
-func (u *UserDB) GetAllUsers() (users []*users.User, err error) {
-	u.db.Find(users)
-	err = nil
-	return
+func (u *UserDB) GetAllUsers() ([]*users.User, error) {
+	usrs := make([]*users.User, 0)
+	u.db.Find(&usrs)
+	return usrs, nil
 }
 
 func (u *UserDB) GetByIdentifier(identifier uuid.UUID) (user *users.User, err error) {
@@ -33,5 +33,10 @@ func (u *UserDB) InsertUser(user *users.User) error {
 	}
 
 	u.db.Create(user)
+	return nil
+}
+
+func (u *UserDB)DeleteUser(identifier uuid.UUID) error{
+	u.db.Delete(&users.User{Identifier: identifier}, "Identifier LIKE ?", identifier)
 	return nil
 }
