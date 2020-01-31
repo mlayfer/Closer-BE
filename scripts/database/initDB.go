@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"os"
-	 	
+
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
@@ -20,9 +20,9 @@ func main() {
 	}
 	defer db.Close()
 
+	db.DropTableIfExists(platforms.Platform{})
+	db.DropTableIfExists(users.User{})
 
 	db.AutoMigrate(users.User{})
 	db.AutoMigrate(platforms.Platform{})
-	//_ = db.Exec("CREATE TABLE Users (	UserIdentifier BLOB   PRIMARY KEY	UNIQUE,		FirstName      STRING NOT NULL,		LastName       STRING NOT NULL,		Email          STRING NOT NULL	);")
-	//_ = db.Exec("CREATE TABLE Platforms ( UserIdentifier BLOB (16) REFERENCES Users (UserID) NOT NULL,Identifier     BLOB      PRIMARY KEY	UNIQUE,		Type           INT       NOT NULL,		UserName       STRING,		Password       STRING,		Nickname       STRING,		ProfilePic     BLOB	);	")
 }
