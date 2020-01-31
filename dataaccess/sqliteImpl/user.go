@@ -17,14 +17,14 @@ func NewUserDB(db *gorm.DB) *UserDB {
 
 func (u *UserDB) GetAllUsers() ([]*users.User, error) {
 	usrs := make([]*users.User, 0)
-	u.db.Find(&usrs)
+	u.db.Preload("Platforms").Find(&usrs)
 	return usrs, nil
 }
 
-func (u *UserDB) GetByIdentifier(identifier uuid.UUID) (user *users.User, err error) {
-	u.db.Where(&users.User{	Identifier: identifier }).First(user)
-	err = nil
-	return
+func (u *UserDB) GetByIdentifier(identifier uuid.UUID) (*users.User, error) {
+	usr := &users.User{}
+	u.db.Where(&users.User{	Identifier: identifier }).Preload("Platforms").First(usr)
+	return usr, nil
 }
 
 func (u *UserDB) InsertUser(user *users.User) error {
