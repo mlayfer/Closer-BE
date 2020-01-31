@@ -23,6 +23,5 @@ func main() {
 	db.DropTableIfExists(platforms.Platform{})
 	db.DropTableIfExists(users.User{})
 
-	db.AutoMigrate(users.User{})
-	db.AutoMigrate(platforms.Platform{})
+	db.AutoMigrate(users.User{}, platforms.Platform{})
 }

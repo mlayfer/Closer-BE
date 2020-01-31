@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	Identifier uuid.UUID `json:"identifier" binding:"required" gorm:"primary_key"`
-	FirstName  string `json:"firstname" binding:"required"`
-	LastName   string `json:"lastname" binding:"required"`
-	Email      string `json:"email" binding:"required"`
+	Identifier uuid.UUID            `json:"identifier" binding:"required" gorm:"primary_key"`
+	FirstName  string               `json:"firstname" binding:"required"`
+	LastName   string               `json:"lastname" binding:"required"`
+	Email      string               `json:"email" binding:"required"`
 	Platforms  []platforms.Platform `gorm:"foreignkey:UserIdentifier;association_foreignkey:Identifier" json:"platforms" binding:"required"`
 }
 

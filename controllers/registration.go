@@ -11,11 +11,11 @@ import (
 
 type RegistrationController struct {
 	log *log.Logger
-	db usersDB
+	db  usersDB
 }
 
 func NewRegistrationController(l *log.Logger, database usersDB) *RegistrationController {
-	return &RegistrationController{log: l, db:database}
+	return &RegistrationController{log: l, db: database}
 }
 
 func (c *RegistrationController) RegisterRouting(eng *gin.Engine) {
@@ -35,10 +35,10 @@ func (c *RegistrationController) registerUser(ctx *gin.Context) {
 	}
 
 	u := &users.User{
-		FirstName:  ru.FirstName,
-		LastName:   ru.LastName,
-		Email:      ru.Email,
-		Platforms:  ru.Platforms,
+		FirstName: ru.FirstName,
+		LastName:  ru.LastName,
+		Email:     ru.Email,
+		Platforms: ru.Platforms,
 	}
 	if err := c.db.InsertUser(u); err != nil {
 		ctx.AbortWithError(http.StatusBadRequest, err)

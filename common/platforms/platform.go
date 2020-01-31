@@ -20,8 +20,8 @@ const (
 )
 
 type Platform struct {
-	Identifier	   uuid.UUID 	`json:"-" gorm:"primary_key;"`
-	UserIdentifier uuid.UUID	`json:"-"`
+	Identifier     uuid.UUID    `json:"-" gorm:"primary_key;"`
+	UserIdentifier uuid.UUID    `json:"-"`
 	Type           PlatformType `json:"type" binding:"required"`
 	Username       string       `json:"username" binding:"required"`
 	Password       string       `json:"password" binding:"required"`

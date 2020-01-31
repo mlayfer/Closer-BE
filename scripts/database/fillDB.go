@@ -14,10 +14,10 @@ var (
 	mockPic     = []byte("c2h0b290IHplIHN0YW0gdG1vb25hIHZlIGxvIHN0cmluZyBhdGEgbWVkYW1pZW4gYXMgZHN3dGcgdDRXIDM1OSVUIFky")
 	MockUsersDB = []*users.User{
 		{
-			FirstName:  "Nitzan",
-			LastName:   "Uzan",
-			Email:      "nitzan@somthing.com",
-			Platforms:  []platforms.Platform{
+			FirstName: "Nitzan",
+			LastName:  "Uzan",
+			Email:     "nitzan@somthing.com",
+			Platforms: []platforms.Platform{
 				{
 					Type:           platforms.Google,
 					Username:       "Nitzanu",
@@ -33,10 +33,10 @@ var (
 			},
 		},
 		{
-			FirstName:  "Maayan",
-			LastName:   "Layfer",
-			Email:      "maayan@somthing.com",
-			Platforms:  []platforms.Platform{
+			FirstName: "Maayan",
+			LastName:  "Layfer",
+			Email:     "maayan@somthing.com",
+			Platforms: []platforms.Platform{
 				{
 					Type:           platforms.Instagram,
 					Username:       "Maayan",
@@ -46,10 +46,10 @@ var (
 			},
 		},
 		{
-			FirstName:  "Lychee",
-			LastName:   "The Dog",
-			Email:      "woofwoof@gmail.com",
-			Platforms:  []platforms.Platform{
+			FirstName: "Lychee",
+			LastName:  "The Dog",
+			Email:     "woofwoof@gmail.com",
+			Platforms: []platforms.Platform{
 				{
 					Type:           platforms.Facebook,
 					Username:       "Lychee",
@@ -71,10 +71,10 @@ var (
 			},
 		},
 		{
-			FirstName:  "Chai",
-			LastName:   "The Dog",
-			Email:      "woofwoof2@gmail.com",
-			Platforms:  []platforms.Platform{
+			FirstName: "Chai",
+			LastName:  "The Dog",
+			Email:     "woofwoof2@gmail.com",
+			Platforms: []platforms.Platform{
 				{
 					Type:           platforms.Instagram,
 					Username:       "chai1",
@@ -95,6 +95,9 @@ func main() {
 		panic(fmt.Sprintf("failed to open DB connection with err %s", err.Error()))
 	}
 	defer db.Close()
+
+	db.DropTableIfExists(platforms.Platform{})
+	db.DropTableIfExists(users.User{})
 
 	db.AutoMigrate(users.User{})
 	db.AutoMigrate(platforms.Platform{})

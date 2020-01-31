@@ -2,7 +2,7 @@ package main
 
 import (
 	"Closer/controllers"
-	"Closer/dataaccess"
+	"Closer/dataaccess/contract"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
@@ -12,7 +12,7 @@ import (
 var logger = log.New()
 
 func main() {
-	db, dbClose := dataaccess.NewDatabaseAccess("root", "root")
+	db, dbClose := contract.NewDatabaseAccess("root", "root")
 	defer dbClose()
 
 	eng := gin.Default()
@@ -26,8 +26,8 @@ func main() {
 	}
 }
 
-func GetAllRoutables(db *dataaccess.Database) []interface {RegisterRouting(eng *gin.Engine)} {
-	return []interface {RegisterRouting(eng *gin.Engine)}{
+func GetAllRoutables(db *contract.Database) []interface{ RegisterRouting(eng *gin.Engine) } {
+	return []interface{ RegisterRouting(eng *gin.Engine) }{
 		controllers.NewRootController(logger),
 		controllers.NewUsersController(logger, db),
 		controllers.NewRegistrationController(logger, db),

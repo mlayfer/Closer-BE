@@ -17,7 +17,7 @@ type usersDB interface {
 
 type UsersController struct {
 	log *log.Logger
-	db usersDB
+	db  usersDB
 }
 
 func NewUsersController(l *log.Logger, database usersDB) *UsersController {
